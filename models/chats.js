@@ -18,6 +18,10 @@ const ChatSchema = new Schema({
     message: {
         type: String,
         required: true
+    },
+    created: {
+        type: Date,
+        required: true
     }
 });
 

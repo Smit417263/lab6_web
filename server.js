@@ -8,10 +8,12 @@ const mongoose = require('mongoose');
 const config = require('config');
 const Room = require("./models/Rooms");
 const Chat = require("./models/Chats")
+const moment = require('moment');
 
 // import handlers
 const homeHandler = require('./controllers/home.js');
 const roomHandler = require('./controllers/room.js');
+const messageHandler = require('./controllers/messages.js')
 
 
 
@@ -47,19 +49,25 @@ app.post("/create", function(req, res){
         id: roomIdGenerator.roomIdGenerator()
     })
     newRoom.save().then(console.log("Room has been added")).catch(err => console.log("Error when creating room: ", err))
-
 })
 
 app.post("/:roomName/messages", function(req, res){
+    var url = '/' + req.params.roomName + "/messages";
+    var time = moment().format('MMMM Do YYYY, h:mm:ss a')
     const newChat = new Chat ({
-        name: req.body.chatName,
+        name: req.body.nickname,
         chat_id: req.params.roomName,
         id: 1,
-        message: req.body.message
+        message: req.body.message,
+        created: time
     })
-   // newChat.save().then(console.log("Chat has been added")).catch(err => console.log("Error when creating chat: ", err))
-    console.log(req.body);
-    console.log(req.params);
+   newChat.save().then(() => {console.log("Chat has been added"); res.redirect(url)}).catch(err => console.log("Error when creating chat: ", err))
+})
+
+app.get("/:roomName/getMessage", function(req, res){
+    Chat.find({chat_id: req.params.roomName}).lean().then(item => {
+        res.json(item);
+    })
 })
 
 // getRoom - return a json of all rooms in the DB
@@ -73,6 +81,7 @@ app.get("/getRoom", function(req, res){
 
 app.get('/', homeHandler.getHome);
 app.get('/:roomName', roomHandler.getRoom);
+app.get("/:roomName/messages", messageHandler.getMessages)
 
 // NOTE: This is the sample server.js code we provided, feel free to change the structures
 

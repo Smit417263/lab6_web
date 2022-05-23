@@ -1,0 +1,63 @@
+<p>MESSAGES PAGE</p>
+<p id="roomName" hidden>{{roomName}}</p>
+<br>
+
+<form action="/{{roomName}}/messages" method="POST">
+<input type="text" name="nickname" placeholder="NickName" id="nickname" /> <br>
+<input type="text" name="message" placeholder="enter message"/>
+<input type="submit" value="create message"/> 
+</form>
+
+<ul id="list-template-chat" style="list-style: none">
+    {{#each chats}}
+         <li> <a>{{this.created}}</a> <a> {{this.message}}  - </a> <a>{{this.name}}</a></li>
+    {{/each}}
+</ul>
+
+<script>
+    var nickname = document.getElementById("nickname").value;
+    var rN = document.getElementById("roomName").innerText;
+    url = "/" + rN + "/getMessage";
+    var ul_element = document.getElementById('list-template-chat');
+    var list = ul_element.children;
+    for(var i = 0; i < list.length; ++i){
+        var row = list[i];
+        var name = row.lastChild.innerText
+        if(name == nickname){ // add nickname
+            row.style = "margin-left: 400px"
+        }
+    }
+    setInterval(async function(){
+        fetch(url)
+    .then(response => response.json())
+    .then(data => {
+        var chats = data;
+        nickname = document.getElementById("nickname").value;
+
+        var html = "";
+        var ul_element = document.getElementById('list-template-chat');
+        
+        document.getElementById('list-template-chat').innerHTML=" "
+
+        for(var j = 0; j < chats.length; ++j) {
+            var li = document.createElement('li');
+            var a0 = document.createElement('a');
+            var a1 = document.createElement('a');
+            var a2 = document.createElement('a');
+            li.appendChild(a0);
+            li.appendChild(a1);
+            li.appendChild(a2);
+            document.getElementById('list-template-chat').appendChild(li)
+            a0.innerHTML = chats[j].created + ' '
+            a1.innerHTML = chats[j].message + ' - '
+            a2.innerHTML = chats[j].name
+            if(chats[j].name == nickname){
+                li.style = "margin-left: 400px"
+            }
+        }
+        console.log("rebuilt")
+    })
+    .catch(err => {
+        console.log("ERROR" + err)
+    });}, 5000)
+</script>
