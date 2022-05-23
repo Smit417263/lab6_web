@@ -4,3 +4,9 @@
     The room you are visiting is {{ roomName }}
 </p>
 <p>To generate a new room, here is the room id: {{ newRoomId }}</p>
+
+
+<form action="/{{roomName}}/messages" method="POST">
+<input type="text" name="roomName" placeholder="enter chat name"/>
+<input type="submit" value="create message"/> 
+</form>

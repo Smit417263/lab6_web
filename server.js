@@ -7,6 +7,7 @@ const roomIdGenerator = require('./util/roomIdGenerator');
 const mongoose = require('mongoose');
 const config = require('config');
 const Room = require("./models/Rooms");
+const Chat = require("./models/Chats")
 
 // import handlers
 const homeHandler = require('./controllers/home.js');
@@ -47,6 +48,18 @@ app.post("/create", function(req, res){
     })
     newRoom.save().then(console.log("Room has been added")).catch(err => console.log("Error when creating room: ", err))
 
+})
+
+app.post("/:roomName/messages", function(req, res){
+    const newChat = new Chat ({
+        name: req.body.chatName,
+        chat_id: req.params.roomName,
+        id: 1,
+        message: req.body.message
+    })
+   // newChat.save().then(console.log("Chat has been added")).catch(err => console.log("Error when creating chat: ", err))
+    console.log(req.body);
+    console.log(req.params);
 })
 
 // getRoom - return a json of all rooms in the DB
