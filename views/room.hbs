@@ -5,8 +5,16 @@
 </p>
 <p>To generate a new room, here is the room id: {{ newRoomId }}</p>
 
+<script>
+    var nickname = "";
+    console.log(nickname)
+    // nickname = prompt("nickname?") 
+    console.log(nickname)
+    
+</script>
 
 <form action="/{{roomName}}/messages" method="POST">
-<input type="text" name="roomName" placeholder="enter chat name"/>
+<input type="text" name="nickname" placeholder="{NICKNAME}" value="{NICKNAME}" disabled/>
+<input type="text" name="message" placeholder="enter message"/>
 <input type="submit" value="create message"/> 
 </form>
