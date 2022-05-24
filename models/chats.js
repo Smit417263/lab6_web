@@ -20,7 +20,7 @@ const ChatSchema = new Schema({
         required: true
     },
     created: {
-        type: Date,
+        type: String,
         required: true
     }
 });
