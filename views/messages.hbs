@@ -44,13 +44,39 @@
             var a0 = document.createElement('a');
             var a1 = document.createElement('a');
             var a2 = document.createElement('a');
+            
+            var downVote = document.createElement('button');
+            var cnt = document.createElement('a');
+            var upVote = document.createElement('button');
+
             li.appendChild(a0);
             li.appendChild(a1);
             li.appendChild(a2);
+
+            li.appendChild(downVote);
+            li.appendChild(cnt);
+            li.appendChild(upVote);
+
+
             document.getElementById('list-template-chat').appendChild(li)
             a0.innerHTML = chats[j].created + ' '
             a1.innerHTML = chats[j].message + ' - '
             a2.innerHTML = chats[j].name
+
+            downVote.innerHTML = "down";
+            upVote.innerHTML = "up";
+            cnt.innerHTML="0";
+
+            downVote.onclick = function () {
+                count = parseInt(cnt.innerHTML) - 1;
+                cnt.innerHTML = count.toString();
+            }
+
+            upVote.onclick = function () {
+                count = parseInt(cnt.innerHTML) + 1;
+                cnt.innerHTML = count.toString();
+            }
+
             if(chats[j].name == nickname){
                 li.style = "margin-left: 400px"
             }
