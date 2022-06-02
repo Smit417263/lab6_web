@@ -95,7 +95,7 @@
             upVote.innerHTML = "up";
             downVote.name = chats[j].message + ' - '
             upVote.name = chats[j].message + ' - '
-            cnt.innerHTML="0";
+            cnt.innerHTML="0"; //change to chats[j].vote
 
             cnt.id = "cnt" + j.toString();
             downVote.id = "dv" + j.toString();
@@ -113,12 +113,9 @@
                 
                 var c = document.getElementById(cID);
 
-                console.log(d,cID)
-
                 count = parseInt(c.innerHTML) - 1;
                 c.innerHTML = count.toString();
                 chats[j].vote = count.toString();
-                console(chats[j].vote);
             }
 
             upVote.onclick = function () {
@@ -133,12 +130,9 @@
                 
                 var c = document.getElementById(cID);
 
-                console.log(d,cID)
-
                 count = parseInt(c.innerHTML) + 1;
                 c.innerHTML = count.toString();
                 chats[j].vote = count.toString();
-                console(chats[j].vote);
             }
 
             if(chats[j].name == nickname){
