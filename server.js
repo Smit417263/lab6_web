@@ -52,6 +52,7 @@ app.post("/create", function(req, res){
 })
 
 app.post("/:roomName/messages", function(req, res){
+    
     var url = '/' + req.params.roomName + "/messages";
     var time = moment().format('MMMM Do YYYY, h:mm:ss a')
     const newChat = new Chat ({
@@ -59,7 +60,8 @@ app.post("/:roomName/messages", function(req, res){
         chat_id: req.params.roomName,
         id: 1,
         message: req.body.message,
-        created: time
+        created: time,
+        vote: "0"
     })
    newChat.save().then(() => {console.log("Chat has been added"); res.redirect(url)}).catch(err => console.log("Error when creating chat: ", err))
 })
