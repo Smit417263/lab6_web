@@ -16,3 +16,14 @@
     margin-top: 25px;
     margin-bottom: 25px;
 }
+
+.room {
+    display: flex;
+    justify-content: center;
+}
+
+.create-room {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 25px;
+}
