@@ -8,13 +8,15 @@ const mongoose = require('mongoose');
 const config = require('config');
 const Room = require("./models/Rooms");
 const Chat = require("./models/Chats")
+const User = require("./models/User")
 const moment = require('moment');
 
 // import handlers
 const homeHandler = require('./controllers/home.js');
 const roomHandler = require('./controllers/room.js');
 const messageHandler = require('./controllers/messages.js')
-
+const loginHandler = require('./controllers/login.js')
+const signupHandler = require('./controllers/signup.js')
 
 
 const app = express();
@@ -67,6 +69,42 @@ app.post("/:roomName/messages", function(req, res){
     res.redirect(url)}).catch(err => console.log("Error when creating chat: ", err));
 });
 
+app.post("/login", function(req, res){
+    User.find({username: req.body.username, password: req.body.password}).lean().then(item => {
+        if(item.length < 1){
+            res.redirect('/');
+        }
+        else{
+            //global variable to define logged in User
+            res.redirect('/home')
+        }
+    })
+})
+
+app.post("/signup/newuser", function(req, res){
+    // console.log(req.body)
+    const newUser = new User ({
+        username: req.body.Username,
+        password: req.body.Password,
+        age: req.body.Age,
+        email: req.body.Email,
+        address: req.body.Address
+    })
+    
+    User.find({username: req.body.Username}).lean().then(item => {
+        if(item.length > 0){
+            res.status(401).end("User already exists!")
+        }
+        else{
+            newUser.save().then(() => {
+                console.log("Signup Successful!");
+                res.redirect('/');
+            }).catch(err => console.log("Error Signing up: ", err))
+        }
+    })
+
+})
+
 app.get("/:roomName/getMessage", function(req, res){
     Chat.find({chat_id: req.params.roomName}).lean().then(item => {
         res.json(item);
@@ -82,7 +120,9 @@ app.get("/getRoom", function(req, res){
 
  // Create controller handlers to handle requests at each endpoint
 
-app.get('/', homeHandler.getHome);
+app.get('/', loginHandler.getLogin);
+app.get('/signup', signupHandler.getSignup)
+app.get('/home', homeHandler.getHome);
 app.get('/:roomName', roomHandler.getRoom);
 app.get("/:roomName/messages", messageHandler.getMessages)
 
