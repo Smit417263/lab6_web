@@ -1,20 +1,160 @@
-<h1> Room </h1>
-<p>This is a demo of chatroom page</p>
-<p>
-    The room you are visiting is {{ roomName }}
-</p>
-<p>To generate a new room, here is the room id: {{ newRoomId }}</p>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<link rel="stylesheet" href="../css/style.css">
 
-<form action="/{{roomName}}/messages" method="POST">
-<input type="text" name="nickname" placeholder="NickName" id="nickname" /> <br>
-<input type="text" name="message" placeholder="enter message"/>
-<input type="submit" value="create message"/> 
-</form>
+<h1 class="room-title" id="roomName">Room {{roomName}}</h1>
+
+<div class="send-message-form">
+    <form action="/{{roomName}}/messages" method="POST">
+        <div class="form-group">
+            <label for="nickname">Nickname</label>
+            <input type="text" name="nickname" placeholder="NickName" id="nickname" /> <br>
+            <label for="message">Message</label>
+            <input type="text" name="message" placeholder="enter message" id="message"/>
+        </div>
+        <input type="submit" id="newMessage" value="create message"/> 
+    </form>
+</div>
+
+<div class="search-form">
+    <input type="text" name="search" placeholder="Search For Message" id="search"/>
+    <button id="searchSubmit">Search</button>
+</div>
+
+<ul id="list-template-chat" class="list-group-flush">
+    <li class="list-group-item"> </li>
+</ul>
 
 <script>
-    var nickname = "";
-    nickname = prompt("What is your nickname?") 
-    console.log(nickname);
-    document.getElementById("nickname").placeholder = nickname;
-    document.getElementById("nickname").value = nickname;
+    var submitSearch = document.getElementById("searchSubmit");
+    var searchBar = document.getElementById("search");
+    submitSearch.addEventListener('click', () => {
+        AllMessages();
+    })
+
+    var nickname = prompt("Please enter username: ", "");
+    while (nickname == "" || nickname == null) {
+        nickname = prompt("Please enter username: ", "");
+    }
+    document.getElementById('nickname').value = nickname;
+
+    url = "/" + "{{roomName}}" + "/getMessage";
+    var ul_element = document.getElementById('list-template-chat');
+    var list = ul_element.children;
+
+    AllMessages();
+
+    document.getElementById("newMessage").addEventListener("click", () => {
+        console.log("clicked message")
+    })
+
+    async function AllMessages(){
+        fetch(url)
+    .then(response => response.json())
+    .then(data => {
+        var chats = data;
+
+        var html = "";
+        var ul_element = document.getElementById('list-template-chat');
+
+        var text = searchBar.value;
+
+        document.getElementById('list-template-chat').innerHTML=""
+
+        for(var j = 0; j < chats.length; ++j) {
+            if(text != ""){
+                if(!chats[j].message.includes(text)){
+                    continue;
+                }
+            }
+            var li = document.createElement('li');
+            const para = document.createElement("p");
+            let name = document.createElement("p");
+            name.style.fontWeight = "bold";
+            name.innerHTML = chats[j].name + " @ " + chats[j].created + ":";
+            para.innerHTML = chats[j].message;
+            li.appendChild(name);
+            li.appendChild(para);
+            li.className = "list-group-item";            
+
+            let downVote = document.createElement('button');
+            var cnt = document.createElement('a');
+            let upVote = document.createElement('button');
+
+            li.appendChild(downVote);
+            li.appendChild(cnt);
+            li.appendChild(upVote);
+
+            document.getElementById('list-template-chat').appendChild(li)
+
+            downVote.innerHTML = "+";
+            upVote.innerHTML = "-";
+            downVote.name = chats[j].message + ' - '
+            upVote.name = chats[j].message + ' - '
+            cnt.innerHTML="0";
+
+            cnt.id = "cnt" + j.toString();
+            downVote.id = "dv" + j.toString();
+            upVote.id = "uv" + j.toString();
+
+            downVote.onclick = function () {
+                var d = downVote.id;
+                var sub_d = d.substring(d.length-2);
+                if(sub_d[0] == '1' || sub_d[0] == '2' || sub_d[0] == '3' || sub_d[0] == '4' || sub_d[0] == '5' || sub_d[0] == '6' || sub_d[0] == '7' || sub_d[0] == '8' || sub_d[0] == '9'){
+                    var cID = "cnt" + sub_d;
+                }
+                else{
+                    var cID = "cnt" +  sub_d[1];
+                }
+                
+                var c = document.getElementById(cID);
+
+                console.log(d,cID)
+
+                count = parseInt(c.innerHTML) - 1;
+                c.innerHTML = count.toString();
+                chats[j].vote = count.toString();
+                console(chats[j].vote);
+            }
+
+            upVote.onclick = function () {
+                var d = upVote.id;
+                var sub_d = d.substring(d.length-2); // this gets the last two values of d (2 values incase for double digit messages)
+                if(sub_d[0] == '1' || sub_d[0] == '2' || sub_d[0] == '3' || sub_d[0] == '4' || sub_d[0] == '5' || sub_d[0] == '6' || sub_d[0] == '7' || sub_d[0] == '8' || sub_d[0] == '9'){
+                    var cID = "cnt" + sub_d;
+                }
+                else{
+                    var cID = "cnt" +  sub_d[1];
+                }
+                
+                var c = document.getElementById(cID);
+
+                console.log(d,cID)
+
+                count = parseInt(c.innerHTML) + 1;
+                c.innerHTML = count.toString();
+                chats[j].vote = count.toString();
+                console(chats[j].vote);
+            }
+        }
+       /* for(var i = 0; i < chats.length; ++i){
+            var cntId = "cnt" + i.toString();
+            var dId = "dv" + i.toString();
+            var uId = "uv" + i.toString();
+
+            var d = document.getElementById(dId)
+            var u = document.getElementById(uId)
+            
+            d.addEventListener('click', () => {
+                var cid = d.id
+                for(var k = 0; k < cid.length; ++k){
+                    console.log(cid[k])
+                }
+            })
+
+        }*/
+        console.log("rebuilt")
+    })
+    .catch(err => {
+        console.log("ERROR" + err)
+    });}
 </script>
