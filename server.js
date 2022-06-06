@@ -72,11 +72,20 @@ app.post("/:roomName/messages", function(req, res){
 });
 
 app.post("/:roomName/edit", function(req, res){   // change this to post after
-    var url = '/' + req.params.roomName + "/messages";
+    var url = '/' + req.params.roomName;
    
     Chats.findOneAndUpdate({chat_id: req.params.roomName, message: req.body.oldMessage},{chat_id: req.params.roomName, message: req.body.messageEdit},(req,res)=>{
         //your code here.
     })
+
+    res.redirect(url)
+})
+
+app.post("/:roomName/delete", function(req, res){   // change this to post after
+    var url = '/' + req.params.roomName;
+    //req.body.del_message
+   
+    Chats.find({chat_id: req.params.roomName, message: req.body.del_message}).deleteOne().exec();
 
     res.redirect(url)
 })

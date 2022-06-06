@@ -158,3 +158,16 @@
         console.log("ERROR" + err)
     });}
 </script>
+
+<form action="/{{roomName}}/edit" method="POST">
+    <input type="text" name="oldMessage" placeholder="oldMessage" id="old" /> <br>
+    <input type="text" name="messageEdit" placeholder="enter new message"/>
+    <input type="submit" id="editMessage" value="edit message"/> 
+    <br>
+    <br>
+</form>
+
+<form action="/{{roomName}}/delete" method="POST">
+    <input type="text" name="del_message" placeholder="delete message" id="del" /> <br>
+    <input type="submit" id="deleteMessage" value="delete message"/> 
+</form>
