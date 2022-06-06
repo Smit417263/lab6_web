@@ -1,1 +1,29 @@
 /* TODO: style each page */
+
+.room-title {
+    display: flex;
+    justify-content: center;
+}
+
+.send-message-form {
+    display: flex;
+    justify-content: center;
+}
+
+.search-form {
+    display: flex;
+    justify-content: center;
+    margin-top: 25px;
+    margin-bottom: 25px;
+}
+
+.room {
+    display: flex;
+    justify-content: center;
+}
+
+.create-room {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 25px;
+}
