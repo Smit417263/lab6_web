@@ -145,25 +145,16 @@
                 li.style = "margin-left: 400px"
             }
         }
-       /* for(var i = 0; i < chats.length; ++i){
-            var cntId = "cnt" + i.toString();
-            var dId = "dv" + i.toString();
-            var uId = "uv" + i.toString();
-
-            var d = document.getElementById(dId)
-            var u = document.getElementById(uId)
-            
-            d.addEventListener('click', () => {
-                var cid = d.id
-                for(var k = 0; k < cid.length; ++k){
-                    console.log(cid[k])
-                }
-            })
-
-        }*/
+     
         console.log("rebuilt")
     })
     .catch(err => {
         console.log("ERROR" + err)
     });}
 </script>
+
+<form action="/{{roomName}}/edit" method="POST">
+    <input type="text" name="oldMessage" placeholder="oldMessage" id="old" /> <br>
+    <input type="text" name="messageEdit" placeholder="enter new message"/>
+    <input type="submit" id="editMessage" value="edit message"/> 
+</form>

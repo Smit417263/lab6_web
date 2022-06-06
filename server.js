@@ -66,6 +66,26 @@ app.post("/:roomName/messages", function(req, res){
    newChat.save().then(() => {console.log("Chat has been added"); res.redirect(url)}).catch(err => console.log("Error when creating chat: ", err))
 })
 
+app.post("/:roomName/edit", function(req, res){   // change this to post after
+    var url = '/' + req.params.roomName + "/messages";
+    //Chat.findOneAndUpdate({chat_id: req.params.roomName , message: req.body.oldMessage}, {$inc: { message : req.body.messageEdit }} )
+
+    // Chat.find({chat_id: req.params.roomName  , message: req.body.oldMessage}).lean().then(item => {
+    //     Chat.updateOne(item[0], {message : req.body.messageEdit } )
+    // });
+    
+    Chat.find({chat_id: req.params.roomName  , message: "Welcome everyone"}).lean().then(item => {
+        console.log(item[0])
+        Chat.updateOne(item[0],{$inc: {message : "UCR CS 110" }}, function(err) {
+            if (err) throw err;
+            console.log("1 document updated");
+          }); 
+    });
+
+
+    res.redirect(url)
+})
+
 app.get("/:roomName/getMessage", function(req, res){
     Chat.find({chat_id: req.params.roomName}).lean().then(item => {
         res.json(item);
