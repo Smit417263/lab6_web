@@ -16,7 +16,9 @@ const homeHandler = require('./controllers/home.js');
 const roomHandler = require('./controllers/room.js');
 const messageHandler = require('./controllers/messages.js')
 const loginHandler = require('./controllers/login.js')
-const signupHandler = require('./controllers/signup.js')
+const signupHandler = require('./controllers/signup.js');
+const async = require('hbs/lib/async');
+const Chats = require('./models/Chats');
 
 
 const app = express();
@@ -42,7 +44,7 @@ mongoose.connect(db,
     err => {
         if(err) throw err;
         console.log("Connected to MongoDB");
-    });
+});
 
 
 app.post("/create", function(req, res){
@@ -70,20 +72,10 @@ app.post("/:roomName/messages", function(req, res){
 
 app.post("/:roomName/edit", function(req, res){   // change this to post after
     var url = '/' + req.params.roomName + "/messages";
-    //Chat.findOneAndUpdate({chat_id: req.params.roomName , message: req.body.oldMessage}, {$inc: { message : req.body.messageEdit }} )
-
-    // Chat.find({chat_id: req.params.roomName  , message: req.body.oldMessage}).lean().then(item => {
-    //     Chat.updateOne(item[0], {message : req.body.messageEdit } )
-    // });
-    
-    Chat.find({chat_id: req.params.roomName  , message: "Welcome everyone"}).lean().then(item => {
-        console.log(item[0])
-        Chat.updateOne(item[0],{$inc: {message : "UCR CS 110" }}, function(err) {
-            if (err) throw err;
-            console.log("1 document updated");
-          }); 
-    });
-
+   
+    Chats.findOneAndUpdate({chat_id: req.params.roomName, message: req.body.oldMessage},{chat_id: req.params.roomName, message: req.body.messageEdit},(req,res)=>{
+        //your code here.
+    })
 
     res.redirect(url)
 })
