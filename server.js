@@ -24,6 +24,8 @@ const Chats = require('./models/Chats');
 const app = express();
 const port = 8080;
 
+var userName = "";
+
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(cookieParser());
@@ -73,8 +75,13 @@ app.post("/:roomName/messages", function(req, res){
 
 app.post("/:roomName/edit", function(req, res){   // change this to post after
     var url = '/' + req.params.roomName;
-   
-    Chats.findOneAndUpdate({chat_id: req.params.roomName, message: req.body.oldMessage},{chat_id: req.params.roomName, message: req.body.messageEdit},(req,res)=>{
+    console.log(userName)
+    console.table(req.params)
+    console.table(req.body)
+    // if(userName == ){
+
+    // }
+    Chats.findOneAndUpdate({chat_id: req.params.roomName, name: userName, message: req.body.oldMessage},{chat_id: req.params.roomName, name: userName, message: req.body.messageEdit},(req,res)=>{
         //your code here.
     })
 
@@ -85,7 +92,7 @@ app.post("/:roomName/delete", function(req, res){   // change this to post after
     var url = '/' + req.params.roomName;
     //req.body.del_message
    
-    Chats.find({chat_id: req.params.roomName, message: req.body.del_message}).deleteOne().exec();
+    Chats.find({chat_id: req.params.roomName, message: req.body.del_message, name: userName}).deleteOne().exec();
 
     res.redirect(url)
 })
@@ -97,6 +104,7 @@ app.post("/login", function(req, res){
         }
         else{
             //global variable to define logged in User
+            userName = req.body.username
             res.redirect('/home')
         }
     })

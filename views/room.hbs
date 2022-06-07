@@ -31,6 +31,7 @@
         AllMessages();
     })
 
+    // this part should be checked at the login page
     var nickname = prompt("Please enter username: ", "");
     while (nickname == "" || nickname == null) {
         nickname = prompt("Please enter username: ", "");
@@ -86,8 +87,8 @@
 
             document.getElementById('list-template-chat').appendChild(li)
 
-            downVote.innerHTML = "+";
-            upVote.innerHTML = "-";
+            downVote.innerHTML = "-";
+            upVote.innerHTML = "+";
             downVote.name = chats[j].message + ' - '
             upVote.name = chats[j].message + ' - '
             cnt.innerHTML="0";
@@ -161,7 +162,7 @@
 
 <form action="/{{roomName}}/edit" method="POST">
     <input type="text" name="oldMessage" placeholder="oldMessage" id="old" /> <br>
-    <input type="text" name="messageEdit" placeholder="enter new message"/>
+    <input type="text" name="messageEdit" placeholder="enter new message"/> <br>
     <input type="submit" id="editMessage" value="edit message"/> 
     <br>
     <br>
