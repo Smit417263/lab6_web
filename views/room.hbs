@@ -25,7 +25,8 @@
 <script>
     var submitSearch = document.getElementById("searchSubmit");
     var searchBar = document.getElementById("search");
-
+    var votesSet = false;
+    // this part should be checked at the login page
     var nickname = prompt("Please enter username: ", "");
     while (nickname == "" || nickname == null) {
         nickname = prompt("Please enter username: ", "");
@@ -73,16 +74,23 @@
             var cnt = document.createElement('a');
             let upVote = document.createElement('button');
 
+            let voteCount = chats[j].vote;
+
             downVote.innerHTML = '-';
             upVote.innerHTML = '+';
-            cnt.innerHTML = chats[j].vote;
+
             let id = (chats[j].id).toString();
+            console.log(cnt.innerHTML);
             upVote.onclick = function() {
+                voteCount = voteCount + 1;
                 upvote(id);
             }
             downVote.onclick = function() {
+                voteCount = voteCount - 1;
                 downvote(id);
             }
+
+            cnt.innerHTML = voteCount;
 
             li.appendChild(downVote);
             li.appendChild(cnt);
@@ -136,3 +144,16 @@
         });
     }
 </script>
+
+<form action="/{{roomName}}/edit" method="POST">
+    <input type="text" name="oldMessage" placeholder="oldMessage" id="old" /> <br>
+    <input type="text" name="messageEdit" placeholder="enter new message"/> <br>
+    <input type="submit" id="editMessage" value="edit message"/> 
+    <br>
+    <br>
+</form>
+
+<form action="/{{roomName}}/delete" method="POST">
+    <input type="text" name="del_message" placeholder="delete message" id="del" /> <br>
+    <input type="submit" id="deleteMessage" value="delete message"/> 
+</form>

@@ -16,11 +16,15 @@ const homeHandler = require('./controllers/home.js');
 const roomHandler = require('./controllers/room.js');
 const messageHandler = require('./controllers/messages.js')
 const loginHandler = require('./controllers/login.js')
-const signupHandler = require('./controllers/signup.js')
+const signupHandler = require('./controllers/signup.js');
+const async = require('hbs/lib/async');
+const Chats = require('./models/Chats');
 
 
 const app = express();
 const port = 8080;
+
+var userName = "";
 
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
@@ -41,7 +45,7 @@ mongoose.connect(db,
     err => {
         if(err) throw err;
         console.log("Connected to MongoDB");
-    });
+});
 
 
 app.post("/create", function(req, res){
@@ -78,6 +82,30 @@ app.put("/downvote", async(req, res) => {
     await Chat.findOneAndUpdate({id: req.body.id}, {vote: currVote - 1});
 });
 
+app.post("/:roomName/edit", function(req, res){   // change this to post after
+    var url = '/' + req.params.roomName;
+    console.log(userName)
+    console.table(req.params)
+    console.table(req.body)
+    // if(userName == ){
+
+    // }
+    Chats.findOneAndUpdate({chat_id: req.params.roomName, name: userName, message: req.body.oldMessage},{chat_id: req.params.roomName, name: userName, message: req.body.messageEdit},(req,res)=>{
+        //your code here.
+    })
+
+    res.redirect(url)
+})
+
+app.post("/:roomName/delete", function(req, res){   // change this to post after
+    var url = '/' + req.params.roomName;
+    //req.body.del_message
+   
+    Chats.find({chat_id: req.params.roomName, message: req.body.del_message, name: userName}).deleteOne().exec();
+
+    res.redirect(url)
+})
+
 app.post("/login", function(req, res){
     User.find({username: req.body.username, password: req.body.password}).lean().then(item => {
         if(item.length < 1){
@@ -85,6 +113,7 @@ app.post("/login", function(req, res){
         }
         else{
             //global variable to define logged in User
+            userName = req.body.username
             res.redirect('/home')
         }
     })
