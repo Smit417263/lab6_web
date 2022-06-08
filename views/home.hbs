@@ -41,7 +41,6 @@
                 .then(response => response.json())
                 .then(data => {
                     var roomsJson = data;
-                    //  console.log(roomsJson); 
                     var html = "";
                     var ul_element = document.getElementById('list-template');
                     
@@ -49,6 +48,7 @@
 
                     for(var j = 0; j < roomsJson.length; ++j) {
                         var li = document.createElement('li');
+                        li.className = "list-group-item";
                         var a = document.createElement('a');
                         a.setAttribute('href', roomsJson[j].name)
                         li.appendChild(a);
