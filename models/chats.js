@@ -24,7 +24,7 @@ const ChatSchema = new Schema({
         required: true
     },
     vote: {
-        type: String,
+        type: Number,
         required: true
     }
 });

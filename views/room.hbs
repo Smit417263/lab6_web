@@ -10,15 +10,13 @@
 <h1 class="room-title" id="roomName">Room {{roomName}}</h1>
 
 <div class="send-message-form">
-    <form action="/{{roomName}}/messages" method="POST">
         <div class="form-group">
             <label for="nickname">Nickname</label>
             <input type="text" name="nickname" placeholder="NickName" id="nickname" /> <br>
             <label for="message">Message</label>
             <input type="text" name="message" placeholder="enter message" id="message"/>
+            <button onclick="sendMessage()">Create Message </button> 
         </div>
-        <input type="submit" id="newMessage" value="create message"/> 
-    </form>
 </div>
 
 <div class="search-form">
@@ -44,10 +42,7 @@
     })
     var submitSearch = document.getElementById("searchSubmit");
     var searchBar = document.getElementById("search");
-    submitSearch.addEventListener('click', () => {
-        AllMessages();
-    })
-
+    var votesSet = false;
     // this part should be checked at the login page
     //var nickname = prompt("Please enter username: ", "");
     //while (nickname == "" || nickname == null) {
@@ -58,12 +53,10 @@
     url = "/" + "{{roomName}}" + "/getMessage";
     var ul_element = document.getElementById('list-template-chat');
     var list = ul_element.children;
-
     AllMessages();
-
-    document.getElementById("newMessage").addEventListener("click", () => {
-        console.log("clicked message")
-    })
+    setInterval(async function() {
+        AllMessages();
+    }, 1000);
 
     async function AllMessages(){
         fetch(url)
@@ -98,83 +91,75 @@
             var cnt = document.createElement('a');
             let upVote = document.createElement('button');
 
+            let voteCount = chats[j].vote;
+
+            downVote.innerHTML = '-';
+            upVote.innerHTML = '+';
+
+            let id = (chats[j].id).toString();
+            console.log(cnt.innerHTML);
+            upVote.onclick = function() {
+                voteCount = voteCount + 1;
+                upvote(id);
+            }
+            downVote.onclick = function() {
+                voteCount = voteCount - 1;
+                downvote(id);
+            }
+
+            cnt.innerHTML = voteCount;
+
             li.appendChild(downVote);
             li.appendChild(cnt);
             li.appendChild(upVote);
 
-            document.getElementById('list-template-chat').appendChild(li)
-
-            downVote.innerHTML = "-";
-            upVote.innerHTML = "+";
-            downVote.name = chats[j].message + ' - '
-            upVote.name = chats[j].message + ' - '
-            cnt.innerHTML="0";
-
-            cnt.id = "cnt" + j.toString();
-            downVote.id = "dv" + j.toString();
-            upVote.id = "uv" + j.toString();
-
-            downVote.onclick = function () {
-                var d = downVote.id;
-                var sub_d = d.substring(d.length-2);
-                if(sub_d[0] == '1' || sub_d[0] == '2' || sub_d[0] == '3' || sub_d[0] == '4' || sub_d[0] == '5' || sub_d[0] == '6' || sub_d[0] == '7' || sub_d[0] == '8' || sub_d[0] == '9'){
-                    var cID = "cnt" + sub_d;
-                }
-                else{
-                    var cID = "cnt" +  sub_d[1];
-                }
-                
-                var c = document.getElementById(cID);
-
-                console.log(d,cID)
-
-                count = parseInt(c.innerHTML) - 1;
-                c.innerHTML = count.toString();
-                chats[j].vote = count.toString();
-                console(chats[j].vote);
-            }
-
-            upVote.onclick = function () {
-                var d = upVote.id;
-                var sub_d = d.substring(d.length-2); // this gets the last two values of d (2 values incase for double digit messages)
-                if(sub_d[0] == '1' || sub_d[0] == '2' || sub_d[0] == '3' || sub_d[0] == '4' || sub_d[0] == '5' || sub_d[0] == '6' || sub_d[0] == '7' || sub_d[0] == '8' || sub_d[0] == '9'){
-                    var cID = "cnt" + sub_d;
-                }
-                else{
-                    var cID = "cnt" +  sub_d[1];
-                }
-                
-                var c = document.getElementById(cID);
-
-                console.log(d,cID)
-
-                count = parseInt(c.innerHTML) + 1;
-                c.innerHTML = count.toString();
-                chats[j].vote = count.toString();
-                console(chats[j].vote);
-            }
+            document.getElementById('list-template-chat').appendChild(li);
         }
-       /* for(var i = 0; i < chats.length; ++i){
-            var cntId = "cnt" + i.toString();
-            var dId = "dv" + i.toString();
-            var uId = "uv" + i.toString();
-
-            var d = document.getElementById(dId)
-            var u = document.getElementById(uId)
-            
-            d.addEventListener('click', () => {
-                var cid = d.id
-                for(var k = 0; k < cid.length; ++k){
-                    console.log(cid[k])
-                }
-            })
-
-        }*/
         console.log("rebuilt")
     })
     .catch(err => {
         console.log("ERROR" + err)
     });}
+
+    async function upvote(id) {
+        let body = {
+            roomName: "{{roomName}}",
+            id: id,
+        };
+        const response = await fetch('/upvote', {
+            method: 'put',
+            body: JSON.stringify(body),
+            headers: {'Content-Type': 'application/json'}
+        });
+    };
+
+    async function downvote(id) {
+        let body = {
+            roomName: "{{roomName}}",
+            id: id,
+        };
+        const response = await fetch('/downvote', {
+            method: 'put',
+            body: JSON.stringify(body),
+            headers: {'Content-Type': 'application/json'}
+        });
+    }
+
+    async function sendMessage() {
+        let roomName = "{{roomName}}";
+        let message = document.getElementById("message").value;
+        let body = {
+            nickname: nickname,
+            roomName: roomName,
+            message: message,
+        };
+        document.getElementById("message").value = "";
+        const response = await fetch('/sendMessage', {
+            method: 'post',
+            body: JSON.stringify(body),
+            headers: {'Content-Type': 'application/json'}
+        });
+    }
 </script>
 
 <form action="/{{roomName}}/edit" method="POST">
