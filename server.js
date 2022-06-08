@@ -48,6 +48,13 @@ mongoose.connect(db,
         console.log("Connected to MongoDB");
 });
 
+app.get('/username', function(req, res){
+    res.json(userName)
+})
+
+app.get('/logout', function(req, res){
+    userName = '';
+})
 
 app.post("/create", function(req, res){
     const newRoom = new Room ({
@@ -73,11 +80,29 @@ app.post("/:roomName/messages", function(req, res){
     res.redirect(url)}).catch(err => console.log("Error when creating chat: ", err));
 });
 
+app.post('/user/profile/update', function(req, res){
+    console.log(req.body)
+    User.find({username: userName}).lean().then(item => {
+        var user = item[0];
+        var nP = (req.body.newpass == '') ? user.password : req.body.newpass;
+        var nE = (req.body.newemail != '') ? req.body.newemail : user.email;
+        var nAd = (req.body.newaddress != '') ? req.body.newaddress : user.address;
+        var nAg = (req.body.newage != '') ? req.body.newage : user.age;
+
+        User.findOneAndUpdate(user,{password: nP, email: nE, address: nAd, age: nAg, username: userName},(req,res)=>{
+            //your code here.
+        })
+    
+        
+    })
+    res.redirect('/home');
+})
+
 app.post("/:roomName/edit", function(req, res){   // change this to post after
     var url = '/' + req.params.roomName;
-    console.log(userName)
-    console.table(req.params)
-    console.table(req.body)
+    // console.log(userName)
+    // console.table(req.params)
+    // console.table(req.body)
     // if(userName == ){
 
     // }
@@ -100,6 +125,7 @@ app.post("/:roomName/delete", function(req, res){   // change this to post after
 app.post("/login", function(req, res){
     User.find({username: req.body.username, password: req.body.password}).lean().then(item => {
         if(item.length < 1){
+            userName = '';
             res.redirect('/');
         }
         else{
@@ -112,6 +138,7 @@ app.post("/login", function(req, res){
 
 app.post("/signup/newuser", function(req, res){
     // console.log(req.body)
+    userName = '';
     const newUser = new User ({
         username: req.body.Username,
         password: req.body.Password,
@@ -134,6 +161,7 @@ app.post("/signup/newuser", function(req, res){
 
 })
 
+
 app.get("/:roomName/getMessage", function(req, res){
     Chat.find({chat_id: req.params.roomName}).lean().then(item => {
         res.json(item);
@@ -154,6 +182,20 @@ app.get('/signup', signupHandler.getSignup)
 app.get('/home', homeHandler.getHome);
 app.get('/:roomName', roomHandler.getRoom);
 app.get("/:roomName/messages", messageHandler.getMessages)
+app.get('/user/profile', (req, res) => {
+    User.find({username: userName}).lean().then(item => {
+        if(item.length < 1){
+            userName = '';
+            res.redirect('/');
+        }
+        let user = item[0];
+        if(!user){
+            userName = '';
+            res.redirect('/');
+        }
+        res.render('profile', {username: user.username, password: user.password, age: user.age, address: user.address, email: user.email})
+    })
+})
 
 // NOTE: This is the sample server.js code we provided, feel free to change the structures
 

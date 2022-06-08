@@ -1,0 +1,36 @@
+<div class="topnav">
+  <a href="/home">Home</a>
+  <a class="active" href="/user/profile">User Profile</a>
+  <button style="margin-left: 80%;" id="logout">Logout</button>
+</div>
+
+<h1>Current User Profile</h1>
+
+<p style="font-weight: bold;">Username: </p>
+<p>{{username}}</p>
+<p style="font-weight: bold;">Password: </p>
+<p>{{password}}</p>
+<p style="font-weight: bold;">Email: </p>
+<p>{{email}}</p>
+<p style="font-weight: bold;">Address: </p>
+<p>{{address}}</p>
+<p style="font-weight: bold;">Age: </p>
+<p>{{age}}</p>
+
+<h3>Edit User Profile</h3>
+<form action="/user/profile/update" method="POST">
+    <input type="text" name="newpass" placeholder="enter new password"/> <br>
+    <input type="text" name="newemail" placeholder="enter new email"/> <br>
+    <input type="text" name="newaddress" placeholder="enter new address"/> <br>
+    <input type="text" name="newage" placeholder="enter new age"/> <br>
+    <input type="submit">
+</form>
+
+<script>
+    window.addEventListener('load', function () {
+        document.getElementById("logout").addEventListener('click', () => {
+            fetch('logout');
+            window.location = '/';
+        })
+    }
+</script>
