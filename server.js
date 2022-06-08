@@ -33,7 +33,6 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
 app.engine('hbs', hbs.engine({extname: 'hbs', defaultLayout: 'layout', layoutsDir: __dirname + '/views/layouts/'}));
 
-
 // set up stylesheets route
 
 // TODO: Add server side code
@@ -53,20 +52,30 @@ app.post("/create", function(req, res){
     newRoom.save().then(console.log("Room has been added")).catch(err => console.log("Error when creating room: ", err))
 })
 
-app.post("/:roomName/messages", function(req, res){
-    
+app.post("/sendMessage", async(req, res) => {
     var url = '/' + req.params.roomName;
     var time = moment().format('MMMM Do YYYY, h:mm:ss a')
     const newChat = new Chat ({
         name: req.body.nickname,
-        chat_id: req.params.roomName,
-        id: 1,
+        chat_id: req.body.roomName,
+        id: roomIdGenerator.roomIdGenerator(),
         message: req.body.message,
         created: time,
-        vote: "0"
-    })
-    newChat.save().then(() => {console.log("Chat has been added");
-    res.redirect(url)}).catch(err => console.log("Error when creating chat: ", err));
+        vote: 0
+    });
+    const result = await newChat.save();
+});
+
+app.put("/upvote", async(req, res) => {
+    const chats = await Chat.find({id: req.body.id}).lean();
+    const currVote = chats[0].vote;
+    await Chat.findOneAndUpdate({id: req.body.id}, {vote: currVote + 1});
+});
+
+app.put("/downvote", async(req, res) => {
+    const chats = await Chat.find({id: req.body.id}).lean();
+    const currVote = chats[0].vote;
+    await Chat.findOneAndUpdate({id: req.body.id}, {vote: currVote - 1});
 });
 
 app.post("/login", function(req, res){
